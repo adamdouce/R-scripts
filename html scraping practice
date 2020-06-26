@@ -1,0 +1,39 @@
+# info coming from http://pablobarbera.com/ECPR-SC104/code/01-scraping-tables.html
+
+url <- "https://www.ssa.gov/oact/babynames/numberUSbirths.html"
+html <- read_html(url) 
+
+tab <- html_table(html, fill=TRUE)
+str(tab) # note list of 1
+
+pop <- tab[[1]]
+
+#Now let’s clean the data so that we can use it for our analysis. We need to convert the population values into a numeric format, 
+#which requires deleting the commas. We will also change the variable names so that it’s easier to work with them.
+pop$Male <- as.numeric(gsub(",", "", pop$Male))
+pop$Female <- as.numeric(gsub(",", "", pop$Female))
+names(pop) <- c("year", "male", "female", "total")
+
+#decent reference for plotting
+plot(pop$year, pop$male, xlab="Year of birth", ylab="New SSN petitions",
+     col="darkgreen", type="l")
+lines(pop$year, pop$female, col="red")
+legend(x="topleft", c("Male", "Female"), lty=1, col=c("green", "red"))
+
+#Practive on another table
+url_OT <- "https://www.opentable.com/state-of-industry"
+html_OT <- read_html(url_OT)
+tab_OT <- html_table(html_OT, fill = TRUE)
+str(tab_OT)
+pop_OT <- tab_OT[[1]]
+
+# 1 more for practice
+
+url_tsa <- "https://www.tsa.gov/coronavirus/passenger-throughput"
+html_tsa <- read_html(url_tsa)
+tab_tsa <- html_table(html_tsa, fill = TRUE)
+str(tab_tsa)
+pop_tsa <- tab_tsa[[1]]
+#fix column headers
+colnames(pop_tsa) <- as.character(unlist(pop_tsa[1,]))
+pop_tsa <- pop_tsa[-1, ]
